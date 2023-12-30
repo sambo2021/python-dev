@@ -1,6 +1,6 @@
 from fastapi import Depends,HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext # we use it for password hasher
@@ -24,7 +24,7 @@ SECRET_KEY = "2cfea755f57d42cc34ce427475f5891aa92361bff9af79a360d1dafd296853d9"
 class User(BaseModel):
     username: str
     hashed_password: str
-    email: str or None = None
+    email: EmailStr | None = Field(default=None)
     full_name: str or None = None
     disabled: bool or None = None
 
