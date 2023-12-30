@@ -33,7 +33,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/users/me/", tags=["my-user"])
+@app.get("/users/me", tags=["my-user"])
 async def read_users_me(request: Request ,current_user: User = Depends(get_current_active_user)):
     return {
             "request_headers": request.headers,
