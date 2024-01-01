@@ -78,7 +78,7 @@ def add_user(user: User):
             session.add(user,_warn=True)
             session.commit()
     else:
-        raise HTTPException(status_code=409, detail=f"user {user.fullname} exists")
+        raise HTTPException(status_code=409, detail=f"user {exist_user.fullname} exists")
 
 
 def get_all_users():

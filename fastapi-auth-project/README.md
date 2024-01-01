@@ -16,9 +16,4 @@ console.log(pm.collectionVariables.get("accessToken"));
 
 - in get users request select auth baerer {{accessToken}}
 
-- in get users/{{user_id}} add user_id in headers and in tests
-```sh
-var userId = parseInt(pm.request.headers.get("user_id"));
-pm.collectionVariables.set("user_id", userId);
-console.log(userId);
-```
+- in get users/{{user_name}} add user_name you want to search for in the url and select auth baerer {{accessToken}}
