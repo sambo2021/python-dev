@@ -1,10 +1,11 @@
-from sqlmodel import Field, SQLModel, Session, create_engine, select
+from sqlmodel import Field, SQLModel, Session, create_engine, select, MetaData, Table
 from passlib.context import CryptContext
 from datetime import datetime
 from sqlalchemy import UniqueConstraint
 from fastapi import HTTPException
 from email_validator import EmailNotValidError, validate_email
 from disposable_email_domains import blocklist
+import json
 
 class User(SQLModel, table=True):
     __table_args__ = (UniqueConstraint("email"),)
@@ -76,6 +77,7 @@ def get_all_users():
         users = session.exec(statement).fetchall()
         return users
 
+
 # Example usage
 if __name__ == "__main__":
     #Hashing and verifying passwords
@@ -97,11 +99,23 @@ if __name__ == "__main__":
         email = "hany.phill@xyzcorp.com",
         hashed_password = hash_password("hany123"))
     
-    engine = create_engine("sqlite:///database.db",echo=True)
+    # engine = create_engine("sqlite:///database.db",echo=True)
     # SQLModel.metadata.create_all(engine)
-    
-    print(validate_email_data("tom.hessen@xyzcorp.com"))
-                       
+
+
+
+
+
+    byte_data = b'{  \r\n    "username" : "adrianphill", \r\n    "fullname" :"Adrian Phill",\r\n    "email" : "Adrian.Phill@gmail.com",\r\n    "password" : "adrianphill"\r\n}'
+
+    # Decode the bytes to a string
+    json_str = byte_data.decode('utf-8')
+
+    # Parse the string as JSON
+    json_data = json.loads(json_str)
+
+    print(json_data)
+                    
                        
                        
             

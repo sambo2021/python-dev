@@ -2,7 +2,8 @@ from datetime import timedelta
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from models import Token, User, authenticate_user, create_access_token, get_current_active_user
-from database import create_db_and_tables, get_user, add_user, get_all_users, tom,adrian,ben
+from database import create_db_and_tables, get_user, add_user, get_all_users, hash_password, initiate_admin
+import json
 
 
 app = FastAPI()
@@ -10,9 +11,7 @@ app = FastAPI()
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
-    add_user(tom)
-    add_user(adrian)
-    add_user(ben)
+    initiate_admin()
 
 @app.get("/",tags=["root"])
 async def read_root(request: Request, current_user: User = Depends(get_current_active_user)):
@@ -49,10 +48,6 @@ async def read_users_me(request: Request ,current_user: User = Depends(get_curre
 
 @app.get("/users/{user_name}",tags=["user_name"])
 async def read_item(user_name: str , request: Request , current_user: User = Depends(get_current_active_user)):
-    print("---------------")
-    print(type(user_name))
-    print(user_name)
-    print("---------------")
     user = get_user(user_name)
     if user :
        return {"user_name": user.username,
@@ -76,7 +71,24 @@ async def read_item(request: Request , current_user: User = Depends(get_current_
             "owner": current_user
             }
 
-
+@app.post("/users",tags=["add_user"])
+async def read_item(request: Request , current_user: User = Depends(get_current_active_user)):
+    request_body  = await request.body()
+    # Decode the bytes to a string
+    json_str = request_body.decode('utf-8')
+    # Parse the string as JSON
+    json_data = json.loads(json_str)
+    new_user=User(
+        username = json_data["username"], 
+        fullname = json_data["fullname"],
+        email = json_data["email"],
+        hashed_password = hash_password(json_data["password"])
+    )
+    add_user(new_user)
+    return {
+            "request_headers": request.headers,
+            "owner": current_user
+            }
 
 
 

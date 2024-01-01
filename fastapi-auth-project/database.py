@@ -8,6 +8,7 @@ from disposable_email_domains import blocklist
 
 sqlite_file_name = "database.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
+#sql_url = f"postgresql+psycopg2://admin:admin@postgres.dev.svc:5432/authdb"
 
 connect_args = {"check_same_thread": False}
 engine = create_engine(sqlite_url, echo=True, connect_args=connect_args)
@@ -87,20 +88,13 @@ def get_all_users():
         users = session.exec(statement).fetchall()
         return users
     
-tom = User(
-        username = "tom", 
-        fullname = "Tom Hessen",
-        email = "tom.hessen@xyzcorp.com",
-        hashed_password = hash_password("tom123"))
+mohamedsambo = User(
+        username = "mohamedsambo", 
+        fullname = "Mohamed Sambo Mahmoud",
+        email = "mohamed.sambo@gmail.com",
+        hashed_password = hash_password("mohamedsambo"))
 
-adrian = User(
-        username = "adrian", 
-        fullname = "Adrian Phill",
-        email = "adrian.phill@xyzcorp.com",
-        hashed_password = hash_password("adrian123"))
-
-ben = User(
-        username = "ben", 
-        fullname = "ben haword",
-        email = "ben.haword@xyzcorp.com",
-        hashed_password = hash_password("ben123"))
+def initiate_admin():
+    admin = get_user("mohamedsambo")
+    if not admin:
+        add_user(mohamedsambo)

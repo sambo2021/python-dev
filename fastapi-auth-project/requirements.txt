@@ -7,3 +7,4 @@ passlib[bcrypt]
 pydantic[email]
 disposable_email_domains
 sqlmodel
+psycopg2-binary==2.9.5
