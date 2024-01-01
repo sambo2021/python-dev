@@ -49,17 +49,18 @@ async def read_users_me(request: Request ,current_user: User = Depends(get_curre
 @app.get("/users/{user_name}",tags=["user_name"])
 async def read_item(user_name: str , request: Request , current_user: User = Depends(get_current_active_user)):
     user = get_user(user_name)
-    if user :
-       return {"user_name": user.username,
-               "user_fullname": user.fullname,
-               "user_email": user.email,
-               "query_params": request.query_params,
-               "request_headers": request.headers,
-               "owner": current_user
-            }
-    else:
-        raise HTTPException(status_code=status.HTTP_404_UNAUTHORIZED,
-                            detail=f"user {user_name} is not found in database", headers={"WWW-Authenticate": "Bearer"})
+    try:
+        return {"user_name": user.username,
+                "user_fullname": user.fullname,
+                "user_email": user.email,
+                "query_params": request.query_params,
+                "request_headers": request.headers,
+                "owner": current_user
+                }
+    except:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"user {user_name} doesnot exist", headers={"WWW-Authenticate": "Bearer"})
+
        
     
 
