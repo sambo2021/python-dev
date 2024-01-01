@@ -65,7 +65,7 @@ def validate_email_data(email: str):
         return False
 
 def validate_data(user: User):
-    return validate_email_data(user.email) and type(user.username) == str and type(user.fullname) == str
+    return validate_email_data(user.email) and type(user.username) == str
 
 def get_user(username: str):
     with Session(engine) as session:
@@ -74,12 +74,12 @@ def get_user(username: str):
 
 def add_user(user: User):
     exist_user = get_user(user.username)
-    if not exist_user and validate_data(user):
+    if not exist_user:
         with Session(engine) as session:
             session.add(user,_warn=True)
             session.commit()
     else:
-        raise HTTPException(status_code=409, detail=f"user {exist_user.fullname} exists")
+        raise HTTPException(status_code=409, detail=f"user {exist_user.fullname} exists and username is {exist_user.username}")
 
 
 def get_all_users():

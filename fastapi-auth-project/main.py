@@ -2,7 +2,7 @@ from datetime import timedelta
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from models import Token, User, authenticate_user, create_access_token, get_current_active_user
-from database import create_db_and_tables, get_user, add_user, get_all_users, hash_password, initiate_admin
+from database import create_db_and_tables, get_user, add_user, get_all_users, hash_password, initiate_admin, validate_data
 import json
 
 
@@ -75,9 +75,7 @@ async def read_item(request: Request , current_user: User = Depends(get_current_
 @app.post("/users",tags=["add_user"])
 async def read_item(request: Request , current_user: User = Depends(get_current_active_user)):
     request_body  = await request.body()
-    # Decode the bytes to a string
     json_str = request_body.decode('utf-8')
-    # Parse the string as JSON
     json_data = json.loads(json_str)
     new_user=User(
         username = json_data["username"], 
@@ -85,11 +83,16 @@ async def read_item(request: Request , current_user: User = Depends(get_current_
         email = json_data["email"],
         hashed_password = hash_password(json_data["password"])
     )
-    add_user(new_user)
-    return {
-            "request_headers": request.headers,
-            "owner": current_user
-            }
+    if validate_data(new_user):
+        add_user(new_user)
+        return {
+                "request_headers": request.headers,
+                "owner": current_user
+                }
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"{new_user.username} or {new_user.email} may be not valid", headers={"WWW-Authenticate": "Bearer"})
+
 
 
 
