@@ -1,10 +1,21 @@
-from sqlmodel import Field, SQLModel, Session, create_engine, select
+from sqlmodel import Field, SQLModel, Session, create_engine,select
 from passlib.context import CryptContext
 from datetime import datetime
 from sqlalchemy import UniqueConstraint
 from fastapi import HTTPException
 from email_validator import EmailNotValidError, validate_email
 from disposable_email_domains import blocklist
+
+sqlite_file_name = "database.db"
+sqlite_url = f"sqlite:///{sqlite_file_name}"
+
+connect_args = {"check_same_thread": False}
+engine = create_engine(sqlite_url, echo=True, connect_args=connect_args)
+
+
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
+
 
 class User(SQLModel, table=True):
     __table_args__ = (UniqueConstraint("email"),)
@@ -55,7 +66,6 @@ def validate_email_data(email: str):
 def validate_data(user: User):
     return validate_email_data(user.email) and type(user.username) == str and type(user.fullname) == str
 
-
 def get_user(username: str):
     with Session(engine) as session:
         user = session.get(User, username)
@@ -70,38 +80,27 @@ def add_user(user: User):
     else:
         raise HTTPException(status_code=409, detail=f"user {user.fullname} exists")
 
+
 def get_all_users():
     with Session(engine) as session:
         statement = select(User)
         users = session.exec(statement).fetchall()
         return users
-
-# Example usage
-if __name__ == "__main__":
-    #Hashing and verifying passwords
-    tom = User(
+    
+tom = User(
         username = "tom", 
         fullname = "Tom Hessen",
         email = "tom.hessen@xyzcorp.com",
         hashed_password = hash_password("tom123"))
-    
-    adrian = User(
+
+adrian = User(
         username = "adrian", 
         fullname = "Adrian Phill",
-        email = "adrian.fphill@xyzcorp.com",
+        email = "adrian.phill@xyzcorp.com",
         hashed_password = hash_password("adrian123"))
-    
-    hany = User(
-        username = "hany", 
-        fullname = "Hany Phill",
-        email = "hany.phill@xyzcorp.com",
-        hashed_password = hash_password("hany123"))
-    
-    engine = create_engine("sqlite:///database.db",echo=True)
-    # SQLModel.metadata.create_all(engine)
-    
-    print(validate_email_data("tom.hessen@xyzcorp.com"))
-                       
-                       
-                       
-            
+
+ben = User(
+        username = "ben", 
+        fullname = "ben haword",
+        email = "ben.haword@xyzcorp.com",
+        hashed_password = hash_password("ben123"))

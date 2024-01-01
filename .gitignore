@@ -1,1 +1,4 @@
 fastapi-auth/__pycache__
+fastapi-auth/database.db
+fastapi-auth-project/__pycache__
+fastapi-auth-project/database.db
